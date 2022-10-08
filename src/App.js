@@ -10,6 +10,8 @@ class App extends Component {
     this.state = {
       monsters: [],
     };
+
+    console.log('constructor');
   }
 
   // Ici on place le code qui sera appelé lorsque le component sera render
@@ -29,9 +31,13 @@ class App extends Component {
           }
         )
       );
+
+    console.log('componentDidMount');
   }
 
   render() {
+    console.log('render');
+
     return (
       <div className="App">
         {this.state.monsters.map((monster) => {
