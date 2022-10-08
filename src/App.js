@@ -8,25 +8,27 @@ class App extends Component {
     super();
 
     this.state = {
-      monsters: [
-        {
-          id: 1,
-          name: 'Linda',
-        },
-        {
-          id: 2,
-          name: 'Frank',
-        },
-        {
-          id: 3,
-          name: 'Jacky',
-        },
-        {
-          id: 4,
-          name: 'Andrei',
-        },
-      ],
+      monsters: [],
     };
+  }
+
+  // Ici on place le code qui sera appelé lorsque le component sera render
+  // C'est un endroit idéal pour y placer les requêtes nécessaires avant l'affichage (exemple: fetch sur une API)
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then((response) => response.json())
+      .then((users) =>
+        this.setState(
+          () => {
+            return {
+              monsters: users,
+            };
+          },
+          () => {
+            console.log(this.state);
+          }
+        )
+      );
   }
 
   render() {
