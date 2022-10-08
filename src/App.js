@@ -35,14 +35,33 @@ class App extends Component {
     console.log('componentDidMount');
   }
 
+  // afin d'optimiser les performances
+  // on crée une nouvelle méthode directement dans le composant
+  // ceci évite que la fonction soit réinitialisée à chaque appel de rendeer()
+  onSearchChange = (event) => {
+    const searchField = event.target.value.toLocaleLowerCase();
+
+    this.setState(() => {
+      // Si ma variable a le même nom que ma clé,
+      // je n'ai pas besoin de la préciser car JavaScript s'en charge
+      // return { searchField: searchField };
+
+      return { searchField };
+    });
+  };
+
   render() {
     console.log('render');
+
+    // On peut utiliser ce système afin de ne pas devoir utiliser le terme this
+    const { monsters, searchField } = this.state;
+    const { onSearchChange } = this;
 
     // Une bonne pratique est de conserver les données d'origine (ici monsters)
     // On va donc créer une variable (ici: filteredMonsters) qui va permettre d'afficher les données filtrées
     // en fonction de la valeur de la variable searchField
-    const filteredMonsters = this.state.monsters.filter((monster) => {
-      return monster.name.toLocaleLowerCase().includes(this.state.searchField);
+    const filteredMonsters = monsters.filter((monster) => {
+      return monster.name.toLocaleLowerCase().includes(searchField);
     });
 
     return (
@@ -51,17 +70,7 @@ class App extends Component {
           className="search-box"
           type="search"
           placeholder="Search monsters"
-          onChange={(event) => {
-            const searchField = event.target.value.toLocaleLowerCase();
-
-            this.setState(() => {
-              // Si ma variable a le même nom que ma clé,
-              // je n'ai pas besoin de la préciser car JavaScript s'en charge
-              // return { searchField: searchField };
-
-              return { searchField };
-            });
-          }}
+          onChange={onSearchChange}
         />
         {filteredMonsters.map((monster) => {
           return (
