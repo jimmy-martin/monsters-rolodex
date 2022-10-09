@@ -2,6 +2,7 @@ import { Component } from 'react';
 
 import './App.css';
 import CardList from './components/card-list/card-list.component';
+import SearchBox from './components/search-box/search-box.component';
 
 class App extends Component {
   constructor() {
@@ -11,8 +12,6 @@ class App extends Component {
       monsters: [],
       searchField: '',
     };
-
-    console.log('constructor');
   }
 
   // Ici on place le code qui sera appelé lorsque le component sera render
@@ -32,8 +31,6 @@ class App extends Component {
           }
         )
       );
-
-    console.log('componentDidMount');
   }
 
   // afin d'optimiser les performances
@@ -52,8 +49,6 @@ class App extends Component {
   };
 
   render() {
-    console.log('render');
-
     // On peut utiliser ce système afin de ne pas devoir utiliser le terme this
     const { monsters, searchField } = this.state;
     const { onSearchChange } = this;
@@ -67,20 +62,13 @@ class App extends Component {
 
     return (
       <div className="App">
-        <input
-          className="search-box"
-          type="search"
+        <SearchBox
+          onChangeHandler={onSearchChange}
           placeholder="Search monsters"
-          onChange={onSearchChange}
+          className="search-box"
         />
-        {/* {filteredMonsters.map((monster) => {
-          return (
-            <div key={monster.id}>
-              <h1>{monster.name}</h1>
-            </div>
-          );
-        })} */}
-        <CardList />
+
+        <CardList monsters={filteredMonsters} />
       </div>
     );
   }
