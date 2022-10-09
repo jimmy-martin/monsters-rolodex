@@ -5,7 +5,7 @@ import { Component } from 'react';
 // mais il faut noter malgré tout que le CSS qui se trouve dans notre fichier importé
 // s'applique tout de même à toute notre application React
 // (exemple: ce fichier CSS pourrait très bien contenir le style de composant card-list)
-import './search-box.style.css';
+import './search-box.styles.css';
 
 class SearchBox extends Component {
   render() {
