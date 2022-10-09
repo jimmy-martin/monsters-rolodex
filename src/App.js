@@ -1,79 +1,59 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 
 import CardList from './components/card-list/card-list.component';
 import SearchBox from './components/search-box/search-box.component';
 
 import './App.css';
 
-class App extends Component {
-  constructor() {
-    super();
+const App = () => {
+  const [searchField, setSearchField] = useState(''); // [value, setValue]
+  const [monsters, setMonsters] = useState([]);
+  const [filteredMonsters, setFilteredMonsters] = useState(monsters);
 
-    this.state = {
-      monsters: [],
-      searchField: '',
-    };
-  }
+  // Dans notre cas, le hook useEffect permet de remplir la variable monsters
+  // en effectuant un fetch sans créer d'appel infini
+  // Sans ce hook, à chaque fois que la variable monsters est modifiée via fetch
+  // le code qui se trouve dans App, se réexécuterai à l'infini
+  // car les données sont certes les mêmes mais correspondent bien à deux tableaux différents en mémoire
+  // useEffect prend en second argument un tableau des variables qui si elles sont modifiées
+  // permettront de relancer le code qui se trouve à l'intérieur du callback en premier argument (ici le fetch)
 
-  // Ici on place le code qui sera appelé lorsque le component sera render
-  // C'est un endroit idéal pour y placer les requêtes nécessaires avant l'affichage (exemple: fetch sur une API)
-  componentDidMount() {
+  // Pour résumer, ici tant que la valeur de monsters n'est pas modifiée via setMonsters
+  // le fetch ne sera pas réexecuté. Il sera ne sera donc exécuté uniquement lors du premier render
+  useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/users')
       .then((response) => response.json())
-      .then((users) =>
-        this.setState(
-          () => {
-            return {
-              monsters: users,
-            };
-          },
-          () => {
-            // console.log(this.state);
-          }
-        )
-      );
-  }
+      .then((users) => setMonsters(users));
+  }, []);
 
-  // afin d'optimiser les performances
-  // on crée une nouvelle méthode directement dans le composant
-  // ceci évite que la fonction soit réinitialisée à chaque appel de rendeer()
-  onSearchChange = (event) => {
-    const searchField = event.target.value.toLocaleLowerCase();
-
-    this.setState(() => {
-      // Si ma variable a le même nom que ma clé,
-      // je n'ai pas besoin de la préciser car JavaScript s'en charge
-      // return { searchField: searchField };
-
-      return { searchField };
-    });
-  };
-
-  render() {
-    // On peut utiliser ce système afin de ne pas devoir utiliser le terme this
-    const { monsters, searchField } = this.state;
-    const { onSearchChange } = this;
-
-    // Une bonne pratique est de conserver les données d'origine (ici monsters)
-    // On va donc créer une variable (ici: filteredMonsters) qui va permettre d'afficher les données filtrées
-    // en fonction de la valeur de la variable searchField
-    const filteredMonsters = monsters.filter((monster) => {
+  // On veut filter la liste de monstres
+  // uniquement si les variables monsters et searchField sont modifiées
+  useEffect(() => {
+    const newFilteredMonsters = monsters.filter((monster) => {
       return monster.name.toLocaleLowerCase().includes(searchField);
     });
 
-    return (
-      <div className="App">
-      <h1 className='app-title'>Monsters Rolodex</h1>
-        <SearchBox
-          className="monsters-search-box"
-          placeholder="Search monsters"
-          onChangeHandler={onSearchChange}
-        />
+    setFilteredMonsters(newFilteredMonsters);
+  }, [monsters, searchField]);
 
-        <CardList monsters={filteredMonsters} />
-      </div>
-    );
-  }
-}
+  const onSearchChange = (event) => {
+    const searchFieldString = event.target.value.toLocaleLowerCase();
+
+    setSearchField(searchFieldString);
+  };
+
+  return (
+    <div className="App">
+      <h1 className="app-title">Monsters Rolodex</h1>
+      <SearchBox
+        className="monsters-search-box"
+        placeholder="Search monsters"
+        onChangeHandler={onSearchChange}
+      />
+
+      <CardList monsters={filteredMonsters} />
+    </div>
+  );
+};
 
 export default App;
